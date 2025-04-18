@@ -3,12 +3,16 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.urls import path, include
 from django.contrib.auth.decorators import login_required
+from .models import *
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 # Create your views here.
 @login_required
 def home(request):
-    
-    return render(request, 'home.html')
+    form = User.objects.all()
+    context = {"form": form}
+    return render(request, 'home.html', context)
 
 def register_view(request):
     username = request.POST.get('username')
