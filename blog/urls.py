@@ -7,4 +7,11 @@ urlpatterns = [
     path("accounts/login", login_view, name="login"),
     path("accounts/logout", logout_view, name="logout"),
     path("accounts/register", register_view, name="register"),
+    path("profile", profile_view, name="profile"),
+
+    # Post URLs
+    path("posts/", post_list_view, name="post_list"),  # List all posts
+    path("posts/create/", post_create_view, name="post_create"), 
+    path("posts/<slug:slug>/", post_detail_view, name="post_detail"),  # View a single post # Create a new post
+    path("posts/<slug:slug>/delete/", post_delete_view, name="post_delete"),  # Delete a post
 ]
