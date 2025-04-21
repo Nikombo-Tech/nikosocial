@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Analytics Dashboard</h1>
+
+        <!-- Summary Cards -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Users</h5>
+                        <p class="card-text">{{ total_users }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Posts</h5>
+                        <p class="card-text">{{ total_posts }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Comments</h5>
+                        <p class="card-text">{{ total_comments }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Posts Per User Chart -->
+        <div class="row mt-5">
+            <!-- Posts Per User Chart -->
+            <div class="col-md-6">
+                <h3>Top 5 Users by Posts</h3>
+                <canvas id="postsPerUserChart"></canvas>
+            </div>
+        
+            <!-- Comments Per Post Chart -->
+            <div class="col-md-6">
+                <h3>Top 5 Posts by Comments</h3>
+                <canvas id="commentsPerPostChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for Posts Per User Chart
+        const postsPerUserLabels = [
+            {% for user in posts_per_user %}
+                "{{ user.username }}",
+            {% endfor %}
+        ];
+        const postsPerUserData = [
+            {% for user in posts_per_user %}
+                {{ user.post_count }},
+            {% endfor %}
+        ];
+
+        // Data for Comments Per Post Chart
+        const commentsPerPostLabels = [
+            {% for post in comments_per_post %}
+                "{{ post.title|truncatechars:20 }}",
+            {% endfor %}
+        ];
+        const commentsPerPostData = [
+            {% for post in comments_per_post %}
+                {{ post.comment_count }},
+            {% endfor %}
+        ];
+
+        // Render Posts Per User Chart
+        const postsPerUserCtx = document.getElementById('postsPerUserChart').getContext('2d');
+        new Chart(postsPerUserCtx, {
+            type: 'bar',
+            data: {
+                labels: postsPerUserLabels,
+                datasets: [{
+                    label: 'Posts',
+                    data: postsPerUserData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Render Comments Per Post Chart
+        const commentsPerPostCtx = document.getElementById('commentsPerPostChart').getContext('2d');
+        new Chart(commentsPerPostCtx, {
+            type: 'bar',
+            data: {
+                labels: commentsPerPostLabels,
+                datasets: [{
+                    label: 'Comments',
+                    data: commentsPerPostData,
+                    backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

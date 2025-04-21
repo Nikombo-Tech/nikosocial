@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from .models import *
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
+from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -159,3 +161,28 @@ def comment_delete_view(request, comment_id):
 
     comment.delete()
     return redirect('post_detail', slug=comment.post.slug)  # Redirect to the post detail view
+
+
+
+
+@login_required
+def analytics_view(request):
+    # Example analytics data
+    total_users = User.objects.count()
+    total_posts = Post.objects.count()
+    total_comments = Comment.objects.count()
+
+    # Posts per user
+    posts_per_user = User.objects.annotate(post_count=Count('posts')).order_by('-post_count')[:5]
+
+    # Comments per post
+    comments_per_post = Post.objects.annotate(comment_count=Count('comments')).order_by('-comment_count')[:5]
+
+    context = {
+        'total_users': total_users,
+        'total_posts': total_posts,
+        'total_comments': total_comments,
+        'posts_per_user': posts_per_user,
+        'comments_per_post': comments_per_post,
+    }
+    return render(request, 'analytics.html', context)
